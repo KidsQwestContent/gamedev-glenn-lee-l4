@@ -3995,11 +3995,11 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.System.Acts.SetLayerVisible,
 		C3.Plugins.System.Acts.SetGroupActive,
 		C3.Plugins.Sprite.Acts.MoveToLayer,
+		C3.Plugins.Sprite.Acts.MoveToBottom,
 		C3.Plugins.Sprite.Acts.Destroy,
+		C3.Plugins.Spritefont2.Acts.SetText,
 		C3.Plugins.Sprite.Acts.SetAnim,
 		C3.Plugins.Sprite.Acts.SetY,
-		C3.Plugins.Spritefont2.Acts.SetText,
-		C3.Plugins.Sprite.Acts.MoveToBottom,
 		C3.Plugins.System.Exps.int,
 		C3.Plugins.System.Exps.random,
 		C3.Plugins.Sprite.Exps.AnimationFrameCount,
@@ -4008,6 +4008,7 @@ self.C3_GetObjectRefTable = function () {
 		C3.Behaviors.Pin.Acts.PinByProperties,
 		C3.Plugins.Sprite.Acts.SetVisible,
 		C3.Plugins.Spritefont2.Acts.Destroy,
+		C3.Plugins.Spritefont2.Cnds.CompareInstanceVar,
 		C3.Plugins.System.Cnds.IsGroupActive,
 		C3.Plugins.Sprite.Cnds.IsBoolInstanceVarSet,
 		C3.Plugins.Sprite.Cnds.CompareInstanceVar,
@@ -4034,11 +4035,14 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.Sprite.Exps.AnimationName,
 		C3.Behaviors.Tween.Acts.StopTweens,
 		C3.Plugins.Sprite.Cnds.IsVisible,
+		C3.Behaviors.Tween.Acts.PauseTweens,
 		C3.Plugins.Sprite.Exps.Count,
 		C3.Plugins.Spritefont2.Cnds.CompareText,
 		C3.Plugins.Spritefont2.Cnds.PickInstVarHiLow,
-		C3.Plugins.Spritefont2.Cnds.CompareInstanceVar,
 		C3.Plugins.Sprite.Exps.Height,
+		C3.Behaviors.Tween.Cnds.IsPlaying,
+		C3.Behaviors.Tween.Acts.ResumeTweens,
+		C3.Plugins.System.Acts.RestartLayout,
 		C3.Plugins.video.Acts.Play,
 		C3.Plugins.video.Cnds.HasEnded
 	];
@@ -4050,6 +4054,7 @@ self.C3_JsPropNameTable = [
 	{button_start: 0},
 	{button_select: 0},
 	{Touch: 0},
+	{id: 0},
 	{ui_font: 0},
 	{Video: 0},
 	{fruit_table: 0},
@@ -4057,12 +4062,11 @@ self.C3_JsPropNameTable = [
 	{order_fruit1: 0},
 	{order_fruit2: 0},
 	{cust: 0},
-	{timer_back: 0},
-	{timer_front: 0},
-	{timer_bar: 0},
+	{game_timer_back: 0},
+	{game_timer_front: 0},
+	{game_timer_bar: 0},
 	{timer_icon: 0},
 	{name: 0},
-	{id: 0},
 	{selected: 0},
 	{fruit: 0},
 	{Audio: 0},
@@ -4079,9 +4083,9 @@ self.C3_JsPropNameTable = [
 	{blender_front: 0},
 	{blender_shadow: 0},
 	{instruction_panel: 0},
-	{timer2_back: 0},
-	{timer2_bar: 0},
-	{timer2_front: 0},
+	{step2_timer_back: 0},
+	{step2_timer_bar: 0},
+	{step2_timer_front: 0},
 	{side: 0},
 	{sliced: 0},
 	{sliced_fruit: 0},
@@ -4099,14 +4103,15 @@ self.C3_JsPropNameTable = [
 	{next_button: 0},
 	{feedback: 0},
 	{active: 0},
-	{popup_incorrect: 0},
-	{popup_close: 0},
+	{popup: 0},
+	{popup_button: 0},
 	{mask: 0},
 	{level: 0},
 	{fruit_name: 0},
 	{command: 0},
 	{cashier_order_count: 0},
 	{complete_order: 0},
+	{current_fruit: 0},
 	{finished_order: 0},
 	{fruit_count: 0},
 	{selected_fruit1: 0},
@@ -4238,11 +4243,21 @@ self.C3_ExpressionFuncs = [
 		() => "STEP 1",
 		() => "STEP 2",
 		() => "STEP 3",
+		() => "STEP 1 BACKGROUND",
+		() => "STEP 1 CUSTOMER",
+		() => "STEP 1 TABLE",
 		() => "STEP 2 BACKGROUND",
 		() => 3,
 		p => {
 			const v0 = p._GetNode(0).GetVar();
 			return () => v0.GetValue();
+		},
+		() => "STEP 3 BACKGROUND",
+		() => "STEP 3 CUSTOMER",
+		() => "STEP 3 TABLE",
+		p => {
+			const n0 = p._GetNode(0);
+			return () => ((((n0.ExpInstVar()) === (3) ? 1 : 0)) ? ("Total:       $0.00") : (""));
 		},
 		() => "STEP 2 FRUIT",
 		p => {
@@ -4251,21 +4266,11 @@ self.C3_ExpressionFuncs = [
 		},
 		() => "L",
 		() => "R",
-		() => 92,
+		() => 192,
 		() => "timer",
-		() => 430,
+		() => 530,
 		() => 10,
 		() => "10stimer",
-		() => "STEP 3 BACKGROUND",
-		() => "STEP 3 CUSTOMER",
-		() => "STEP 3 TABLE",
-		p => {
-			const n0 = p._GetNode(0);
-			return () => ((((n0.ExpInstVar()) === (3) ? 1 : 0)) ? ("Total:       $0.00") : (""));
-		},
-		() => "STEP 1 BACKGROUND",
-		() => "STEP 1 CUSTOMER",
-		() => "STEP 1 TABLE",
 		() => -275,
 		() => 580,
 		p => {
@@ -4279,9 +4284,13 @@ self.C3_ExpressionFuncs = [
 		() => 40,
 		() => 0.15,
 		() => "close",
-		() => "game_timer",
 		() => 96,
 		() => 300,
+		() => "level",
+		p => {
+			const v0 = p._GetNode(0).GetVar();
+			return () => and(v0.GetValue(), "/3");
+		},
 		() => 5,
 		p => {
 			const n0 = p._GetNode(0);
@@ -4330,6 +4339,7 @@ self.C3_ExpressionFuncs = [
 			const v0 = p._GetNode(0).GetVar();
 			return () => and(v0.GetValue(), ".00");
 		},
+		() => "end",
 		p => {
 			const v0 = p._GetNode(0).GetVar();
 			const v1 = p._GetNode(1).GetVar();
